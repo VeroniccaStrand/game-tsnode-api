@@ -1,0 +1,54 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Dependency directories
+node_modules/
+
+
+# Build output
+dist/
+build/
+
+# Environment files
+.env
+.env.*.local
+
+
+
+# IDE files
+.vscode/
+
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Package manager files
+package-lock.json
+
+
+
+
+# Misc
+*.log
+*.out
+*.tmp
+*.gz
+*.sql
+
+# OS-specific files
+*.DS_Store
+*.AppleDouble
+*.LSOverride
+ehthumbs.db
+Icon?
+Thumbs.db
