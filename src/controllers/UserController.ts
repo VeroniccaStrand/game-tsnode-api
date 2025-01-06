@@ -56,7 +56,7 @@ export class UserController {
             }
 
             const token = AuthService.generateAccessToken({ id: user._id });
-            const refreshToken = AuthService.generateRefreshToken(user._id);
+            const refreshToken = await AuthService.generateRefreshToken(user._id);
 
             res.status(200).json({
                 success: true,
@@ -83,6 +83,37 @@ export class UserController {
             });
         } catch (error) {
             next(error);
+        }
+    }
+
+    static async logoutUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const authHeader = req.headers.authorization;
+
+            if (!authHeader || !authHeader.startsWith('Bearer ')) {
+                throw new AppError('Authorization token is missing or invalid', 401);
+            }
+
+            const token = authHeader.split(' ')[1];
+
+            // Använd AuthService.decodeToken för att extrahera userId
+            const decoded = AuthService.decodeToken(token);
+
+            if (!decoded || !decoded.id) {
+                throw new AppError('Invalid token payload', 401);
+            }
+
+            const userId = decoded.id;
+
+            // Ta bort refresh-tokens för användaren
+            await AuthService.deleteRefreshToken(userId);
+
+            res.status(200).json({
+                success: true,
+                message: 'User logged out successfully'
+            });
+        } catch (error) {
+            throw new AppError('Failed to logout user', 500);
         }
     }
 }

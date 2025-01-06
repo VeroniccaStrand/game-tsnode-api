@@ -1,8 +1,12 @@
 import jwt from 'jsonwebtoken';
-import { JWT_SECRET, JWT_REFRESH_SECRET } from '../config/config.env.js'; 
+import { JWT_SECRET, JWT_REFRESH_SECRET } from '../config/config.env.js';
 import { UserModel } from '../models/User.js';
 
 import logger from '../utils/logger.js';
+import { AppError } from '../utils/AppError.js';
+
+//!!! NEED TO DO: handle old access tokens, if new access token is generated, delete/handle old access token
+//!!! Maybe add session id to the token payload, so that we can invalidate the token if needed
 
 export class AuthService {
     private static accessSecret = JWT_SECRET || 'default_jwt_secret';
@@ -51,6 +55,7 @@ export class AuthService {
             try {
                 jwt.verify(refreshToken, this.refreshSecret);
                 return true;
+                logger.info(`valid refresh token: ${refreshToken}`);
             } catch (error) {
                 return false;
             }
@@ -60,9 +65,20 @@ export class AuthService {
             throw new Error('No valid token found, Please login again');
         }
         const newAcessToken = this.generateAccessToken({ id: userId });
-        return newAcessToken;
         logger.info(`new accesstoken: ${newAcessToken}`);
+        return newAcessToken;
+    }
+
+    static async deleteRefreshToken(userId: string): Promise<void> {
+        try {
+            const result = await UserModel.findByIdAndUpdate(userId, { $set: { refreshTokens: [] } });
+
+            if (!result) {
+                throw new AppError('User not found or refresh token does not exist', 404);
+            }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            throw new AppError(`Failed to delete refresh token: ${errorMessage}`, 500);
+        }
     }
 }
-
-

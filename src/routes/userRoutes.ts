@@ -6,9 +6,9 @@ import { createUserSchema } from '../validators/userValidator.js';
 
 const router = express.Router();
 
-// Endpoint för att skapa en användare
 router.post('/create', validateRequest(createUserSchema), UserController.createUser);
 router.post('/login', UserController.loginUser);
 router.get('/profile', authenticate, UserController.getUserProfile);
+router.post('/logout', UserController.logoutUser);
 
 export default router;
