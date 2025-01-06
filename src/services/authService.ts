@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
-import { JWT_SECRET, JWT_REFRESH_SECRET } from '../config/config.env.js'; // Importera din hemliga nyckel
+import { JWT_SECRET, JWT_REFRESH_SECRET } from '../config/config.env.js'; 
 import { UserModel } from '../models/User.js';
-import { loggers } from 'winston';
+
 import logger from '../utils/logger.js';
 
 export class AuthService {
@@ -65,5 +65,4 @@ export class AuthService {
     }
 }
 
-// *TODO - refresh accesstoken
-// *TODO - Logout and clear accesstoken
+

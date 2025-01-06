@@ -3,6 +3,7 @@ import { UserModel } from '../models/User.js';
 import { AppError } from '../utils/AppError.js';
 import { AuthService } from '../services/authService.js';
 import { comparePassword, hashPassword } from '../services/bcryptService.js';
+import { ResponseUserProfileDto } from '../DTO/userDTO/userProfileDTO.js';
 
 export class UserController {
     static async createUser(req: Request, res: Response, next: NextFunction) {
@@ -66,7 +67,7 @@ export class UserController {
         }
     }
 
-    static async getUserProfile(req: Request, res: Response, next: NextFunction) {
+    static async getUserProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const userId = req.user?.id;
             const user = await UserModel.findById(userId).select('-password');
@@ -75,9 +76,10 @@ export class UserController {
                 throw new AppError('User not found', 404);
             }
 
+            const responseDto = new ResponseUserProfileDto(user);
             res.status(200).json({
                 sucess: true,
-                data: user
+                data: responseDto
             });
         } catch (error) {
             next(error);
